@@ -46,11 +46,13 @@ export default class VueRouter {
     if (this.fallback) {
       mode = 'hash'
     }
+    // 非浏览器环境，强制使用abstract模式
     if (!inBrowser) {
       mode = 'abstract'
     }
     this.mode = mode
 
+    // 根据不同mode，实例化不同history实例
     switch (mode) {
       case 'history':
         this.history = new HTML5History(this, options.base)
@@ -241,6 +243,7 @@ export default class VueRouter {
   }
 }
 
+// 注册守卫，并返回卸载函数
 function registerHook (list: Array<any>, fn: Function): Function {
   list.push(fn)
   return () => {
