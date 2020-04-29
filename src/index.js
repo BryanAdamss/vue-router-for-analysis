@@ -1,6 +1,6 @@
 /* @flow */
 
-import { install } from './install'
+import { install } from './install' // 导入安装方法
 import { START } from './util/route'
 import { assert } from './util/warn'
 import { inBrowser } from './util/dom'
@@ -254,9 +254,9 @@ function createHref (base: string, fullPath: string, mode) {
   return base ? cleanPath(base + '/' + path) : path
 }
 
-VueRouter.install = install
+VueRouter.install = install // 挂载安装方法，Vue.use时，自动调用install方法
 VueRouter.version = '__VERSION__'
-
+// 浏览器环境，自动安装VueRouter
 if (inBrowser && window.Vue) {
   window.Vue.use(VueRouter)
 }
