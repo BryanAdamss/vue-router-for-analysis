@@ -13,6 +13,7 @@ import {
 } from '../util/resolve-components'
 import { NavigationDuplicated } from './errors'
 
+// 父类
 export class History {
   router: Router
   base: string
@@ -25,6 +26,7 @@ export class History {
   errorCbs: Array<Function>
 
   // implemented by sub-classes
+  // 需要子类(HTML5History、HashHistory)实现的方法
   +go: (n: number) => void
   +push: (loc: RawLocation) => void
   +replace: (loc: RawLocation) => void
@@ -33,9 +35,10 @@ export class History {
 
   constructor (router: Router, base: ?string) {
     this.router = router
+    // 格式化base，保证base是以/开头
     this.base = normalizeBase(base)
     // start with a route object that stands for "nowhere"
-    this.current = START
+    this.current = START // 当前指向的route对象，默认为START
     this.pending = null
     this.ready = false
     this.readyCbs = []
@@ -210,6 +213,7 @@ export class History {
   }
 }
 
+// 格式化base，保证base地址是以/开头，尾部无/
 function normalizeBase (base: ?string): string {
   if (!base) {
     if (inBrowser) {
