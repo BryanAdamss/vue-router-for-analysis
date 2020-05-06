@@ -9,26 +9,33 @@ import { pushState, replaceState, supportsPushState } from '../util/push-state'
 
 export class HTML5History extends History {
   constructor (router: Router, base: ?string) {
+    // 初始化父类History
     super(router, base)
 
+    // 检测是否需要支持scroll
     const expectScroll = router.options.scrollBehavior
     const supportsScroll = supportsPushState && expectScroll
 
+    // 若支持scroll,初始化scroll相关逻辑
     if (supportsScroll) {
       setupScroll()
     }
 
+    // 获取初始location
     const initLocation = getLocation(this.base)
+    // 监听popstate事件
     window.addEventListener('popstate', e => {
       const current = this.current
 
       // Avoiding first `popstate` event dispatched in some browsers but first
       // history route not updated since async guard at the same time.
+      // 某些浏览器，会在初始化时触发一次popstate，需要屏蔽
       const location = getLocation(this.base)
       if (this.current === START && location === initLocation) {
         return
       }
 
+      // 路由地址发生变化，则跳转，并在跳转后处理滚动
       this.transitionTo(location, route => {
         if (supportsScroll) {
           handleScroll(router, route, current, true)
@@ -71,6 +78,10 @@ export class HTML5History extends History {
   }
 }
 
+// 获取base之后的url
+// https://router.vuejs.org/zh/api/#routes
+// 假如base为/zh/
+// 则返回api/#routes
 export function getLocation (base: string): string {
   let path = decodeURI(window.location.pathname)
   if (base && path.indexOf(base) === 0) {
