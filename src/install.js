@@ -11,8 +11,12 @@ export function install (Vue) {
 
   const isDef = v => v !== undefined
 
+  // 为router-view组件关联路由组件
   const registerInstance = (vm, callVal) => {
     let i = vm.$options._parentVnode
+    // 调用vm.$options._parentVnode.data.registerRouteInstance方法
+    // 而这个方法只在router-view组件中存在，router-view组件定义在(../components/view.js @71行)
+    // 所以，如果vm的父节点为router-view，则为router-view关联当前vm，即将当前vm做为router-view的路由组件
     if (isDef(i) && isDef(i = i.data) && isDef(i = i.registerRouteInstance)) {
       i(vm, callVal)
     }
@@ -28,7 +32,7 @@ export function install (Vue) {
         // 在Vue根实例上保存一些信息
         this._routerRoot = this // 保存挂载VueRouter的Vue实例，此处为根实例
         this._router = this.$options.router // 保存VueRouter实例
-
+        // beforeCreate hook被触发时，调用
         this._router.init(this) // 初始化VueRouter实例，并传入Vue根实例
 
         // 响应式定义_route属性，保证_route发生变化时，组件会重新渲染
@@ -37,9 +41,11 @@ export function install (Vue) {
         // 回溯查找_routerRoot
         this._routerRoot = (this.$parent && this.$parent._routerRoot) || this
       }
+      // 为router-view组件关联路由组件
       registerInstance(this, this)
     },
     destroyed () {
+      // destroyed hook触发时，取消router-view和路由组件的关联
       registerInstance(this)
     }
   })

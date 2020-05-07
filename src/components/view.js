@@ -68,12 +68,14 @@ export default {
 
     // attach instance registration hook
     // this will be called in the instance's injected lifecycle hooks
+    // 为router-view绑定路由组件，在所有组件的beforeCreate、destoryed hook中调用
+    // vm一般为router-view组件,val一般为路由组件
     data.registerRouteInstance = (vm, val) => {
       // val could be undefined for unregistration
       const current = matched.instances[name]
       if (
-        (val && current !== vm) ||
-        (!val && current === vm)
+        (val && current !== vm) || // 绑定
+        (!val && current === vm) // 若val不存在，则可视为解绑
       ) {
         matched.instances[name] = val
       }
