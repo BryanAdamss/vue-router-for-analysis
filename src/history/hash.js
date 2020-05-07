@@ -9,8 +9,12 @@ import { pushState, replaceState, supportsPushState } from '../util/push-state'
 
 export class HashHistory extends History {
   constructor (router: Router, base: ?string, fallback: boolean) {
+    // 实例化父类
     super(router, base)
     // check history fallback deeplinking
+    // fallback只有在指明了mode为history，但是浏览器又不支持popstate，用户手动指明了fallback为true时，才为true，其它情况为false
+    // 如果需要回退，则将url换为hash模式(/#开头)
+    // this.base来自父类
     if (fallback && checkFallback(this.base)) {
       return
     }
@@ -89,14 +93,21 @@ export class HashHistory extends History {
   }
 }
 
+/**
+ * 检查回退，将url转换为hash模式(添加/#)
+ */
 function checkFallback (base) {
   const location = getLocation(base)
+  // 地址不以/#开头，则添加之
   if (!/^\/#/.test(location)) {
     window.location.replace(cleanPath(base + '/#' + location))
     return true
   }
 }
 
+/**
+ * 确保url是以/开头
+ */
 function ensureSlash (): boolean {
   const path = getHash()
   if (path.charAt(0) === '/') {
@@ -106,6 +117,11 @@ function ensureSlash (): boolean {
   return false
 }
 
+/**
+ * 获取#之后内容
+ * http://localhost:8080/#/center/test?subjectCode=03&phaseCode=04&hwType=6
+ * /center/test?subjectCode=03&phaseCode=04&hwType=6
+ */
 export function getHash (): string {
   // We can't use window.location.hash here because it's not
   // consistent across browsers - Firefox will pre-decode it!
@@ -118,6 +134,7 @@ export function getHash (): string {
   // decode the hash but not the search or hash
   // as search(query) is already decoded
   // https://github.com/vuejs/vue-router/issues/2708
+  // 不decode qs和hash之后的内容
   const searchIndex = href.indexOf('?')
   if (searchIndex < 0) {
     const hashIndex = href.indexOf('#')
