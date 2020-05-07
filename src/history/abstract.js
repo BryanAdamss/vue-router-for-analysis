@@ -5,11 +5,19 @@ import { History } from './base'
 import { NavigationDuplicated } from './errors'
 import { isExtendedError } from '../util/warn'
 
+/**
+ * 支持所有 JavaScript 运行环境，如 Node.js 服务器端。如果发现没有浏览器的 API，路由会自动强制进入这个模式
+ *
+ * @export
+ * @class AbstractHistory
+ * @extends {History}
+ */
 export class AbstractHistory extends History {
   index: number
   stack: Array<Route>
 
   constructor (router: Router, base: ?string) {
+    // 初始化父类
     super(router, base)
     this.stack = []
     this.index = -1
