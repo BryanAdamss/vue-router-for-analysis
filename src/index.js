@@ -39,7 +39,7 @@ export default class VueRouter {
     this.beforeHooks = []
     this.resolveHooks = []
     this.afterHooks = []
-    this.matcher = createMatcher(options.routes || [], this)
+    this.matcher = createMatcher(options.routes || [], this) // 创建路由matcher对象，传入routes路由配置列表及VueRouter实例
 
     let mode = options.mode || 'hash'
     this.fallback = mode === 'history' && !supportsPushState && options.fallback !== false
@@ -70,6 +70,7 @@ export default class VueRouter {
     }
   }
 
+  // 获取匹配的路由对象
   match (
     raw: RawLocation,
     current?: Route,

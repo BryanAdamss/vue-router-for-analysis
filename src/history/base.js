@@ -46,6 +46,7 @@ export class History {
     this.errorCbs = []
   }
 
+  // 设置监听器，在updateRoute时回调被调用
   listen (cb: Function) {
     this.cb = cb
   }
@@ -65,12 +66,13 @@ export class History {
     this.errorCbs.push(errorCb)
   }
 
+  // 路由跳转
   transitionTo (
-    location: RawLocation,
-    onComplete?: Function,
-    onAbort?: Function
+    location: RawLocation, // 原始location，一个url或者是一个Location interface(自定义形状，在types/router.d.ts中定义)
+    onComplete?: Function, // 跳转成功回调
+    onAbort?: Function// 跳转失败回调
   ) {
-    const route = this.router.match(location, this.current)
+    const route = this.router.match(location, this.current) // TODO:传入需要跳转的location和当前路由对象，返回????
     this.confirmTransition(
       route,
       () => {

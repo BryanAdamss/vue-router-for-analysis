@@ -4,20 +4,20 @@ import type VueRouter from '../index'
 import { stringifyQuery } from './query'
 
 const trailingSlashRE = /\/?$/
-
+// 生成Route
 export function createRoute (
   record: ?RouteRecord,
   location: Location,
   redirectedFrom?: ?Location,
   router?: VueRouter
 ): Route {
-  const stringifyQuery = router && router.options.stringifyQuery
+  const stringifyQuery = router && router.options.stringifyQuery // 支持传入自定义序列化qs方法
 
   let query: any = location.query || {}
   try {
-    query = clone(query)
+    query = clone(query) // location.query为引用值，避免相互影响，进行深拷贝
   } catch (e) {}
-
+  // 生成Route
   const route: Route = {
     name: location.name || (record && record.name),
     meta: (record && record.meta) || {},
@@ -25,15 +25,17 @@ export function createRoute (
     hash: location.hash || '',
     query,
     params: location.params || {},
-    fullPath: getFullPath(location, stringifyQuery),
-    matched: record ? formatMatch(record) : []
+    fullPath: getFullPath(location, stringifyQuery), // 完整path
+    matched: record ? formatMatch(record) : [] // 获取所有匹配的路由记录
   }
+  // 如果是从其它路由对重定向过来的，则需要记录重定向之前的地址
   if (redirectedFrom) {
     route.redirectedFrom = getFullPath(redirectedFrom, stringifyQuery)
   }
+  // 防止篡改
   return Object.freeze(route)
 }
-
+// 深拷贝
 function clone (value) {
   if (Array.isArray(value)) {
     return value.map(clone)
@@ -52,7 +54,8 @@ function clone (value) {
 export const START = createRoute(null, {
   path: '/'
 })
-
+// 格式化匹配的路由记录，当一个路由记录匹配了，如果其还有父路由记录，则父路由记录肯定也是匹配的
+// /foo/bar 匹配了，则其父路由对象 /foo 肯定也匹配了
 function formatMatch (record: ?RouteRecord): Array<RouteRecord> {
   const res = []
   while (record) {
@@ -61,7 +64,7 @@ function formatMatch (record: ?RouteRecord): Array<RouteRecord> {
   }
   return res
 }
-
+// 获取完整path
 function getFullPath (
   { path, query = {}, hash = '' },
   _stringifyQuery

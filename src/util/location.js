@@ -6,15 +6,16 @@ import { resolveQuery } from './query'
 import { fillParams } from './params'
 import { warn } from './warn'
 import { extend } from './misc'
-
+// 格式化location
 export function normalizeLocation (
-  raw: RawLocation,
-  current: ?Route,
-  append: ?boolean,
-  router: ?VueRouter
+  raw: RawLocation, // 原始location，一个string，或者是一个已经格式化后的location
+  current: ?Route, // 当前路由对象
+  append: ?boolean, // 是否是追加模式
+  router: ?VueRouter// VueRouter实例
 ): Location {
   let next: Location = typeof raw === 'string' ? { path: raw } : raw
   // named target
+  // 已经格式化过，直接返回
   if (next._normalized) {
     return next
   } else if (next.name) {
@@ -42,26 +43,26 @@ export function normalizeLocation (
     }
     return next
   }
-
+  // 解析path
   const parsedPath = parsePath(next.path || '')
   const basePath = (current && current.path) || '/'
   const path = parsedPath.path
     ? resolvePath(parsedPath.path, basePath, append || next.append)
     : basePath
-
+  // 解析query
   const query = resolveQuery(
     parsedPath.query,
-    next.query,
-    router && router.options.parseQuery
+    next.query, // 额外需要追加的qs
+    router && router.options.parseQuery // 支持传入自定义解析query的方法
   )
-
+  // 解析hash
   let hash = next.hash || parsedPath.hash
   if (hash && hash.charAt(0) !== '#') {
     hash = `#${hash}`
   }
 
   return {
-    _normalized: true,
+    _normalized: true, // 标识已经格式化过
     path,
     query,
     hash

@@ -1,5 +1,6 @@
 /* @flow */
 
+// 解析path
 export function resolvePath (
   relative: string,
   base: string,
@@ -41,7 +42,7 @@ export function resolvePath (
 
   return stack.join('/')
 }
-
+// 解析path，返回path、query、hash部分
 export function parsePath (path: string): {
   path: string;
   query: string;
@@ -49,13 +50,13 @@ export function parsePath (path: string): {
 } {
   let hash = ''
   let query = ''
-
+  // 存在#，则hash为#到结尾部分；path暂时为开头到#处
   const hashIndex = path.indexOf('#')
   if (hashIndex >= 0) {
     hash = path.slice(hashIndex)
     path = path.slice(0, hashIndex)
   }
-
+  // 当存在?，代表存在qs，则截取出query；path为开头到?的部分
   const queryIndex = path.indexOf('?')
   if (queryIndex >= 0) {
     query = path.slice(queryIndex + 1)
