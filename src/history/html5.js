@@ -73,6 +73,7 @@ export class HTML5History extends History {
     }
   }
 
+  // 获取当前location
   getCurrentLocation (): string {
     return getLocation(this.base)
   }

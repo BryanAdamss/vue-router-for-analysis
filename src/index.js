@@ -82,28 +82,33 @@ export default class VueRouter {
     return this.history && this.history.current
   }
 
+  // 初始化,app为Vue根实例
   init (app: any /* Vue component instance */) {
+    // 开发环境，确保已经安装VueRouter
     process.env.NODE_ENV !== 'production' && assert(
       install.installed,
       `not installed. Make sure to call \`Vue.use(VueRouter)\` ` +
       `before creating root instance.`
     )
 
-    this.apps.push(app)
+    this.apps.push(app) // 保存实例
 
     // set up app destroyed handler
     // https://github.com/vuejs/vue-router/issues/2639
+    // 绑定destroyed hook，避免内存泄露
     app.$once('hook:destroyed', () => {
       // clean out app from this.apps array once destroyed
       const index = this.apps.indexOf(app)
       if (index > -1) this.apps.splice(index, 1)
       // ensure we still have a main app or null if no apps
       // we do not release the router so it can be reused
+      // 需要确保始终有个主应用
       if (this.app === app) this.app = this.apps[0] || null
     })
 
     // main app previously initialized
     // return as we don't need to set up new history listener
+    // main app已经存在，则不需要重复初始化history 的事件监听
     if (this.app) {
       return
     }
@@ -113,18 +118,22 @@ export default class VueRouter {
     const history = this.history
 
     if (history instanceof HTML5History) {
+      // 若是HTML5History类，则直接调用父类的transitionTo方法，跳转到当前location
       history.transitionTo(history.getCurrentLocation())
     } else if (history instanceof HashHistory) {
+      // 若是HashHistory，在调用父类的transitionTo方法后，并传入onComplete、onAbort回调
       const setupHashListener = () => {
+        // 调用HashHistory.setupListeners方法，设置监听
         history.setupListeners()
       }
       history.transitionTo(
         history.getCurrentLocation(),
-        setupHashListener,
-        setupHashListener
+        setupHashListener, // transitionTo的onComplete回调
+        setupHashListener // transitionTo的onAbort回调
       )
     }
-
+    // 调用父类的listen方法，添加回调；
+    // 回调会在父类的updateRoute方法被调用时触发，重新为app._route赋值
     history.listen(route => {
       this.apps.forEach((app) => {
         app._route = route

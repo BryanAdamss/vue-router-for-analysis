@@ -87,7 +87,7 @@ export class HashHistory extends History {
       push ? pushHash(current) : replaceHash(current)
     }
   }
-
+  // 获取当前location
   getCurrentLocation () {
     return getHash()
   }

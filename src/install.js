@@ -31,7 +31,7 @@ export function install (Vue) {
       if (isDef(this.$options.router)) {
         // 在Vue根实例上保存一些信息
         this._routerRoot = this // 保存挂载VueRouter的Vue实例，此处为根实例
-        this._router = this.$options.router // 保存VueRouter实例
+        this._router = this.$options.router // 保存VueRouter实例，this.$options.router仅存在于Vue根实例上，其它Vue组件不包含此属性，所以下面的初始化，只会执行一次
         // beforeCreate hook被触发时，调用
         this._router.init(this) // 初始化VueRouter实例，并传入Vue根实例
 
