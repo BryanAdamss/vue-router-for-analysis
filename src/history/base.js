@@ -72,7 +72,7 @@ export class History {
     onComplete?: Function, // 跳转成功回调
     onAbort?: Function// 跳转失败回调
   ) {
-    const route = this.router.match(location, this.current) // TODO:传入需要跳转的location和当前路由对象，返回????
+    const route = this.router.match(location, this.current) // 传入需要跳转的location和当前路由对象，返回next的Route
     this.confirmTransition(
       route,
       () => {

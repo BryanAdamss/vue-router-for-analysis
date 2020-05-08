@@ -76,7 +76,7 @@ export function createMatcher (
     // no match
     return _createRoute(null, location)
   }
-
+  // 创建重定向Route
   function redirect (
     record: RouteRecord,
     location: Location
@@ -121,11 +121,12 @@ export function createMatcher (
         params
       }, undefined, location)
     } else if (path) {
-      // 1. resolve relative redirect
+      // 重定向是path形式
+      // 1. resolve relative redirect，解析出完整路径
       const rawPath = resolveRecordPath(path, record)
-      // 2. resolve params
+      // 2. resolve params，填充params
       const resolvedPath = fillParams(rawPath, params, `redirect route with path "${rawPath}"`)
-      // 3. rematch with existing query and hash
+      // 3. rematch with existing query and hash，重新匹配
       return match({
         _normalized: true,
         path: resolvedPath,
@@ -139,20 +140,23 @@ export function createMatcher (
       return _createRoute(null, location)
     }
   }
-
+  // 创建别名Route
   function alias (
     record: RouteRecord,
     location: Location,
     matchAs: string
   ): Route {
+    debugger
+    // 获取别名的完整路径
     const aliasedPath = fillParams(matchAs, location.params, `aliased route with path "${matchAs}"`)
+    // 获取别名匹配的原始Route
     const aliasedMatch = match({
       _normalized: true,
       path: aliasedPath
     })
     if (aliasedMatch) {
       const matched = aliasedMatch.matched
-      const aliasedRecord = matched[matched.length - 1]
+      const aliasedRecord = matched[matched.length - 1] // 找到所有匹配的路由记录的最后一个，即当前匹配的路由记录，逻辑见route.js formatMatch方法
       location.params = aliasedMatch.params
       return _createRoute(aliasedRecord, location)
     }
@@ -214,7 +218,7 @@ function matchRoute (
 
   return true
 }
-
+// 解析record中的path
 function resolveRecordPath (path: string, record: RouteRecord): string {
   return resolvePath(path, record.parent ? record.parent.path : '/', true)
 }
