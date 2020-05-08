@@ -73,9 +73,10 @@ export class History {
     onAbort?: Function// 跳转失败回调
   ) {
     const route = this.router.match(location, this.current) // 传入需要跳转的location和当前路由对象，返回next的Route
+    // 确认跳转
     this.confirmTransition(
       route,
-      () => {
+      () => { // onComplete，完成
         this.updateRoute(route)
         onComplete && onComplete(route)
         this.ensureURL()
@@ -88,7 +89,7 @@ export class History {
           })
         }
       },
-      err => {
+      err => { // onAbort，报错（取消）
         if (onAbort) {
           onAbort(err)
         }
@@ -101,9 +102,9 @@ export class History {
       }
     )
   }
-
   confirmTransition (route: Route, onComplete: Function, onAbort?: Function) {
     const current = this.current
+    // 取消
     const abort = err => {
       // after merging https://github.com/vuejs/vue-router/pull/2771 we
       // When the user navigates through history through back/forward buttons
@@ -121,15 +122,18 @@ export class History {
       }
       onAbort && onAbort(err)
     }
+    // 相同Route，报重复错误
     if (
       isSameRoute(route, current) &&
       // in the case the route map has been dynamically appended to
+      // 防止route map 被动态改变了
       route.matched.length === current.matched.length
     ) {
-      this.ensureURL()
+      // ensureURL由子类实现，主要根据传参确定是添加还是替换一个记录
+      this.ensureURL() // 替换当前历史记录
       return abort(new NavigationDuplicated(route))
     }
-
+    // 对比前后route的RouteRecord，找出需要更新、失活、激活的的路由记录
     const { updated, deactivated, activated } = resolveQueue(
       this.current.matched,
       route.matched
@@ -137,17 +141,17 @@ export class History {
 
     const queue: Array<?NavigationGuard> = [].concat(
       // in-component leave guards
-      extractLeaveGuards(deactivated),
+      extractLeaveGuards(deactivated), // 提取路由组件中所有beforeRouteLeave守卫
       // global before hooks
-      this.router.beforeHooks,
+      this.router.beforeHooks, // 全局的beforeEach钩子
       // in-component update hooks
-      extractUpdateHooks(updated),
+      extractUpdateHooks(updated), // 提取路由组件中所有beforeRouteLeave钩子
       // in-config enter guards
-      activated.map(m => m.beforeEnter),
+      activated.map(m => m.beforeEnter), // 路由独享的beforeEnter守卫
       // async components
-      resolveAsyncComponents(activated)
+      resolveAsyncComponents(activated)// 解析异步组件
     )
-
+    // TODO
     this.pending = route
     const iterator = (hook: NavigationGuard, next) => {
       if (this.pending !== route) {
@@ -235,7 +239,7 @@ function normalizeBase (base: ?string): string {
   // remove trailing slash
   return base.replace(/\/$/, '')
 }
-
+// 对比curren、next的路由记录列表，找出需要更新、失活、激活的路由记录
 function resolveQueue (
   current: Array<RouteRecord>,
   next: Array<RouteRecord>
@@ -246,35 +250,45 @@ function resolveQueue (
 } {
   let i
   const max = Math.max(current.length, next.length)
+  // 找到首个不相等的路由记录索引
   for (i = 0; i < max; i++) {
     if (current[i] !== next[i]) {
       break
     }
   }
+  // eg
+  // current:[1,2,3]
+  // next:[1,2,3,4,5]
+  // i为3
+  // 需要更新的为[1,2,3]
+  // 需要激活的为[4,5]
+  // 需要失活的为[]
   return {
-    updated: next.slice(0, i),
-    activated: next.slice(i),
-    deactivated: current.slice(i)
+    updated: next.slice(0, i), // 索引左侧是需要更新的
+    activated: next.slice(i), // 索引右侧是需要激活的
+    deactivated: current.slice(i) // 当前索引右侧是需要失活的
   }
 }
-
+// 提取守卫
 function extractGuards (
   records: Array<RouteRecord>,
-  name: string,
-  bind: Function,
-  reverse?: boolean
+  name: string, // 要提取的守卫名
+  bind: Function, // 绑定守卫上下文函数
+  reverse?: boolean // 是否需要逆序
 ): Array<?Function> {
   const guards = flatMapComponents(records, (def, instance, match, key) => {
-    const guard = extractGuard(def, name)
+    const guard = extractGuard(def, name) // 提取出路由组件中的守卫函数
+    // 为守卫绑定上下文
     if (guard) {
       return Array.isArray(guard)
         ? guard.map(guard => bind(guard, instance, match, key))
         : bind(guard, instance, match, key)
     }
   })
+  // 扁平化 + 逆序
   return flatten(reverse ? guards.reverse() : guards)
 }
-
+// 提取单个守卫
 function extractGuard (
   def: Object | Function,
   key: string
@@ -285,15 +299,15 @@ function extractGuard (
   }
   return def.options[key]
 }
-
+// 传入路由记录列表，提取出beforeRouteLeave守卫并逆序输出
 function extractLeaveGuards (deactivated: Array<RouteRecord>): Array<?Function> {
   return extractGuards(deactivated, 'beforeRouteLeave', bindGuard, true)
 }
-
+// 传入路由记录列表，提取出beforeRouteUpdate钩子
 function extractUpdateHooks (updated: Array<RouteRecord>): Array<?Function> {
   return extractGuards(updated, 'beforeRouteUpdate', bindGuard)
 }
-
+// 将守卫的上下文绑定到vue实例
 function bindGuard (guard: NavigationGuard, instance: ?_Vue): ?NavigationGuard {
   if (instance) {
     return function boundRouteGuard () {

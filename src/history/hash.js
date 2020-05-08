@@ -154,16 +154,18 @@ function getUrl (path) {
   const base = i >= 0 ? href.slice(0, i) : href
   return `${base}#${path}`
 }
-
+// 新增hash记录
 function pushHash (path) {
+  // 支持pushState，则优先使用pushState
   if (supportsPushState) {
     pushState(getUrl(path))
   } else {
     window.location.hash = path
   }
 }
-
+// 替换hash记录
 function replaceHash (path) {
+  // 支持pushState，则优先使用replaceState
   if (supportsPushState) {
     replaceState(getUrl(path))
   } else {

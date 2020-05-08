@@ -2,7 +2,7 @@
 
 import { _Vue } from '../install'
 import { warn, isError } from './warn'
-
+// 解析异步组件
 export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
   return (to, from, next) => {
     let hasAsync = false
@@ -15,25 +15,29 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
       // we are not using Vue's default async resolving mechanism because
       // we want to halt the navigation until the incoming component has been
       // resolved.
+      // def.cid为实例构造函数标识；https://github.com/vuejs/vue/search?q=cid&unscoped_q=cid
+      // 组件的定义是函数且组件cid还未设置，则认为其是一个异步组件
       if (typeof def === 'function' && def.cid === undefined) {
         hasAsync = true
         pending++
-
+        // 解析
         const resolve = once(resolvedDef => {
+          // 加载后的组件定义是一个esm
           if (isESModule(resolvedDef)) {
             resolvedDef = resolvedDef.default
           }
           // save resolved on async factory in case it's used elsewhere
+          // 保留异步组件工厂函数，方便后续使用
           def.resolved = typeof resolvedDef === 'function'
             ? resolvedDef
             : _Vue.extend(resolvedDef)
-          match.components[key] = resolvedDef
+          match.components[key] = resolvedDef // 替换路由记录的命名视图中的组件
           pending--
-          if (pending <= 0) {
+          if (pending <= 0) { // 所有异步组件加载完
             next()
           }
         })
-
+        // 报错
         const reject = once(reason => {
           const msg = `Failed to resolve async component ${key}: ${reason}`
           process.env.NODE_ENV !== 'production' && warn(false, msg)
@@ -44,10 +48,10 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
             next(error)
           }
         })
-
+        // 异步组件，https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6
         let res
         try {
-          res = def(resolve, reject)
+          res = def(resolve, reject) // 返回promise
         } catch (e) {
           reject(e)
         }
@@ -56,7 +60,8 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
             res.then(resolve, reject)
           } else {
             // new syntax in Vue 2.3
-            const comp = res.component
+            // 处理加载状态，返回一个包对象；https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%A4%84%E7%90%86%E5%8A%A0%E8%BD%BD%E7%8A%B6%E6%80%81
+            const comp = res.component // 是通过import()加载，返回的是一个promise
             if (comp && typeof comp.then === 'function') {
               comp.then(resolve, reject)
             }
@@ -64,20 +69,21 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
         }
       }
     })
-
+    // 没有异步组件，直接next
     if (!hasAsync) next()
   }
 }
-
+// 扁平化路由记录中的命名视图
 export function flatMapComponents (
   matched: Array<RouteRecord>,
   fn: Function
 ): Array<?Function> {
   return flatten(matched.map(m => {
     return Object.keys(m.components).map(key => fn(
-      m.components[key],
-      m.instances[key],
-      m, key
+      m.components[key], // 命名视图对应的路由组件定义；一般对应fn的入参def
+      m.instances[key], // route-view实例；一般对应fn的入参_或instance
+      m, // 匹配的路由记录；一般对应fn的入参match
+      key // 命名视图的key；一般对应fn的入参key
     ))
   }))
 }
@@ -89,7 +95,7 @@ export function flatten (arr: Array<any>): Array<any> {
 const hasSymbol =
   typeof Symbol === 'function' &&
   typeof Symbol.toStringTag === 'symbol'
-
+// 判断是否esm
 function isESModule (obj) {
   return obj.__esModule || (hasSymbol && obj[Symbol.toStringTag] === 'Module')
 }
@@ -98,6 +104,7 @@ function isESModule (obj) {
 // so the resolve/reject functions may get called an extra time
 // if the user uses an arrow function shorthand that happens to
 // return that Promise.
+// 保证resolve/reject只调用一次
 function once (fn) {
   let called = false
   return function (...args) {

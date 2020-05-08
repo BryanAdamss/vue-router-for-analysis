@@ -65,7 +65,7 @@ export class HTML5History extends History {
       onComplete && onComplete(route)
     }, onAbort)
   }
-
+  // 根据push参数，确定是push还是replace一个记录
   ensureURL (push?: boolean) {
     if (getLocation(this.base) !== this.current.fullPath) {
       const current = cleanPath(this.base + this.current.fullPath)
