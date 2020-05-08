@@ -124,7 +124,9 @@ export default class VueRouter {
     } else if (history instanceof HashHistory) {
       // 若是HashHistory，在调用父类的transitionTo方法后，并传入onComplete、onAbort回调
       const setupHashListener = () => {
-        // 调用HashHistory.setupListeners方法，设置监听
+        // 调用HashHistory.setupListeners方法，设置hashchange监听
+        // 在 route 切换完成之后再设置 hashchange 的监听,
+        // 修复https://github.com/vuejs/vue-router/issues/725
         history.setupListeners()
       }
       history.transitionTo(

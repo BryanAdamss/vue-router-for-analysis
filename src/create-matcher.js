@@ -146,7 +146,6 @@ export function createMatcher (
     location: Location,
     matchAs: string
   ): Route {
-    debugger
     // 获取别名的完整路径
     const aliasedPath = fillParams(matchAs, location.params, `aliased route with path "${matchAs}"`)
     // 获取别名匹配的原始Route
