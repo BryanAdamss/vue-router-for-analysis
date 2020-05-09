@@ -59,7 +59,7 @@ export const START = createRoute(null, {
 function formatMatch (record: ?RouteRecord): Array<RouteRecord> {
   const res = []
   while (record) {
-    res.unshift(record)
+    res.unshift(record) // 队列头添加，所以父record永远在前面，当前record永远在最后；在router-view组件中获取匹配的route record时会用到
     record = record.parent
   }
   return res
