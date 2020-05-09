@@ -2,7 +2,7 @@
 
 import { _Vue } from '../install'
 import { warn, isError } from './warn'
-// 解析异步组件
+// 解析异步组件，返回一个带有to, from, next参数的函数
 export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
   return (to, from, next) => {
     let hasAsync = false
@@ -81,7 +81,7 @@ export function flatMapComponents (
   return flatten(matched.map(m => {
     return Object.keys(m.components).map(key => fn(
       m.components[key], // 命名视图对应的路由组件定义；一般对应fn的入参def
-      m.instances[key], // route-view实例；一般对应fn的入参_或instance
+      m.instances[key], // router-view实例；一般对应fn的入参_或instance
       m, // 匹配的路由记录；一般对应fn的入参match
       key // 命名视图的key；一般对应fn的入参key
     ))
