@@ -72,19 +72,21 @@ function getFullPath (
   const stringify = _stringifyQuery || stringifyQuery
   return (path || '/') + stringify(query) + hash
 }
-
+// 是否相同route
 export function isSameRoute (a: Route, b: ?Route): boolean {
   if (b === START) {
     return a === b
   } else if (!b) {
     return false
   } else if (a.path && b.path) {
+    // path都存在，比较path、hash、query是否相同
     return (
       a.path.replace(trailingSlashRE, '') === b.path.replace(trailingSlashRE, '') &&
       a.hash === b.hash &&
       isObjectEqual(a.query, b.query)
     )
   } else if (a.name && b.name) {
+    // name都存在，比较name、hash、query、params是否相同
     return (
       a.name === b.name &&
       a.hash === b.hash &&
@@ -114,7 +116,7 @@ function isObjectEqual (a = {}, b = {}): boolean {
     return String(aVal) === String(bVal)
   })
 }
-
+// 判断target的path是否包含current的path，如果包含，则在非精准匹配时当前link要激活
 export function isIncludedRoute (current: Route, target: Route): boolean {
   return (
     current.path.replace(trailingSlashRE, '/').indexOf(

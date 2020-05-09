@@ -214,7 +214,7 @@ export default class VueRouter {
       })
     }))
   }
-
+  // 解析目标位置
   resolve (
     to: RawLocation,
     current?: Route,
@@ -234,7 +234,7 @@ export default class VueRouter {
       append,
       this
     )
-    const route = this.match(location, current)
+    const route = this.match(location, current) // 获取匹配的route
     const fullPath = route.redirectedFrom || route.fullPath
     const base = this.history.base
     const href = createHref(base, fullPath, this.mode)
@@ -264,7 +264,7 @@ function registerHook (list: Array<any>, fn: Function): Function {
     if (i > -1) list.splice(i, 1)
   }
 }
-
+// 创建href
 function createHref (base: string, fullPath: string, mode) {
   var path = mode === 'hash' ? '#' + fullPath : fullPath
   return base ? cleanPath(base + '/' + path) : path
