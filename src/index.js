@@ -127,6 +127,7 @@ export default class VueRouter {
         // 调用HashHistory.setupListeners方法，设置hashchange监听
         // 在 route 切换完成之后再设置 hashchange 的监听,
         // 修复https://github.com/vuejs/vue-router/issues/725
+        // 因为如果钩子函数 beforeEnter 是异步的话, beforeEnter 钩子就会被触发两次. 因为在初始化时, 如果此时的 hash 值不是以 / 开头的话就会补上 #/, 这个过程会触发 hashchange 事件, 就会再走一次生命周期钩子, 也就意味着会再次调用 beforeEnter 钩子函数.
         history.setupListeners()
       }
       history.transitionTo(

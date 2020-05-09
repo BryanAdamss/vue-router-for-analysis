@@ -6,7 +6,7 @@ const Time =
   inBrowser && window.performance && window.performance.now
     ? window.performance
     : Date
-
+// 生成唯一key，用来在state中标识每个路由
 export function genStateKey (): string {
   return Time.now().toFixed(3)
 }

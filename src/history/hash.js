@@ -23,17 +23,19 @@ export class HashHistory extends History {
 
   // this is delayed until the app mounts
   // to avoid the hashchange listener being fired too early
+  // 修复#725;https://github.com/vuejs/vue-router/issues/725
+  // 因为如果钩子函数 beforeEnter 是异步的话, beforeEnter 钩子就会被触发两次. 因为在初始化时, 如果此时的 hash 值不是以 / 开头的话就会补上 #/, 这个过程会触发 hashchange 事件, 就会再走一次生命周期钩子, 也就意味着会再次调用 beforeEnter 钩子函数.
   setupListeners () {
     const router = this.router
     const expectScroll = router.options.scrollBehavior
     const supportsScroll = supportsPushState && expectScroll
-
+    // 若支持scroll,初始化scroll相关逻辑
     if (supportsScroll) {
       setupScroll()
     }
-
+    // 添加事件监听
     window.addEventListener(
-      supportsPushState ? 'popstate' : 'hashchange',
+      supportsPushState ? 'popstate' : 'hashchange', // 优先使用popstate
       () => {
         const current = this.current
         if (!ensureSlash()) {
@@ -41,8 +43,9 @@ export class HashHistory extends History {
         }
         this.transitionTo(getHash(), route => {
           if (supportsScroll) {
-            handleScroll(this.router, route, current, true)
+            handleScroll(this.router, /* to*/route, /* from*/current, true)
           }
+          // 不支持pushState，直接替换记录
           if (!supportsPushState) {
             replaceHash(route.fullPath)
           }
