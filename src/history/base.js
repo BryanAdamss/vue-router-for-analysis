@@ -50,7 +50,7 @@ export class History {
   listen (cb: Function) {
     this.cb = cb
   }
-
+  // 注册ready回调
   onReady (cb: Function, errorCb: ?Function) {
     if (this.ready) {
       cb()
@@ -61,7 +61,7 @@ export class History {
       }
     }
   }
-
+  // 注册error回调
   onError (errorCb: Function) {
     this.errorCbs.push(errorCb)
   }
@@ -78,10 +78,11 @@ export class History {
       route,
       () => { // onComplete，完成
         this.updateRoute(route) // 更新route，会触发afterEach钩子
-        onComplete && onComplete(route)
+        onComplete && onComplete(route) // 调用onComplete回调
         this.ensureURL()
 
         // fire ready cbs once
+        // 触发ready回调
         if (!this.ready) {
           this.ready = true
           this.readyCbs.forEach(cb => {
@@ -93,6 +94,7 @@ export class History {
         if (onAbort) {
           onAbort(err)
         }
+        // 触发error回调
         if (err && !this.ready) {
           this.ready = true
           this.readyErrorCbs.forEach(cb => {

@@ -43,11 +43,11 @@ export class HTML5History extends History {
       })
     })
   }
-
+  // 导航
   go (n: number) {
     window.history.go(n)
   }
-
+  // 新增
   push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
     const { current: fromRoute } = this
     this.transitionTo(location, route => {
@@ -56,7 +56,7 @@ export class HTML5History extends History {
       onComplete && onComplete(route)
     }, onAbort)
   }
-
+  // 替换
   replace (location: RawLocation, onComplete?: Function, onAbort?: Function) {
     const { current: fromRoute } = this
     this.transitionTo(location, route => {

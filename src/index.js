@@ -78,7 +78,7 @@ export default class VueRouter {
   ): Route {
     return this.matcher.match(raw, current, redirectedFrom)
   }
-
+  // 获取当前路由信息对象
   get currentRoute (): ?Route {
     return this.history && this.history.current
   }
@@ -144,27 +144,27 @@ export default class VueRouter {
       })
     })
   }
-
+  // 注册beforeEach守卫
   beforeEach (fn: Function): Function {
     return registerHook(this.beforeHooks, fn)
   }
-
+  // 注册beforeResolve守卫
   beforeResolve (fn: Function): Function {
     return registerHook(this.resolveHooks, fn)
   }
-
+  // 注册afterEach钩子
   afterEach (fn: Function): Function {
     return registerHook(this.afterHooks, fn)
   }
-
+  // 注册history的ready回调
   onReady (cb: Function, errorCb?: Function) {
     this.history.onReady(cb, errorCb)
   }
-
+  // 注册history的error回调
   onError (errorCb: Function) {
     this.history.onError(errorCb)
   }
-
+  // 添加一条路由记录
   push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
     // $flow-disable-line
     if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
@@ -175,7 +175,7 @@ export default class VueRouter {
       this.history.push(location, onComplete, onAbort)
     }
   }
-
+  // 替换一条路由记录
   replace (location: RawLocation, onComplete?: Function, onAbort?: Function) {
     // $flow-disable-line
     if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
@@ -186,19 +186,19 @@ export default class VueRouter {
       this.history.replace(location, onComplete, onAbort)
     }
   }
-
+  // 动态的导航到一个新 URL
   go (n: number) {
     this.history.go(n)
   }
-
+  // 后退
   back () {
     this.go(-1)
   }
-
+  // 前进
   forward () {
     this.go(1)
   }
-
+  // 返回目标位置或是当前路由匹配的组件数组 (是数组的定义/构造类，不是实例)。通常在服务端渲染的数据预加载时使用
   getMatchedComponents (to?: RawLocation | Route): Array<any> {
     const route: any = to
       ? to.matched
@@ -247,7 +247,7 @@ export default class VueRouter {
       resolved: route
     }
   }
-
+  // 动态添加更多的路由规则
   addRoutes (routes: Array<RouteConfig>) {
     this.matcher.addRoutes(routes)
     if (this.history.current !== START) {

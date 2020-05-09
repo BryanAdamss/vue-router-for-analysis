@@ -53,7 +53,7 @@ export class HashHistory extends History {
       }
     )
   }
-
+  // 新增
   push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
     const { current: fromRoute } = this
     this.transitionTo(
@@ -66,7 +66,7 @@ export class HashHistory extends History {
       onAbort
     )
   }
-
+  // 替换
   replace (location: RawLocation, onComplete?: Function, onAbort?: Function) {
     const { current: fromRoute } = this
     this.transitionTo(
@@ -79,11 +79,11 @@ export class HashHistory extends History {
       onAbort
     )
   }
-
+  // 导航
   go (n: number) {
     window.history.go(n)
   }
-
+  // 根据push字段，确定是新增还是替换一条历史记录
   ensureURL (push?: boolean) {
     const current = this.current.fullPath
     if (getHash() !== current) {

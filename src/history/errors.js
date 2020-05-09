@@ -1,3 +1,4 @@
+// 重复导航错误
 export class NavigationDuplicated extends Error {
   constructor (normalizedLocation) {
     super()
