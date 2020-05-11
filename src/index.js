@@ -138,6 +138,7 @@ export default class VueRouter {
     }
     // 调用父类的listen方法，添加回调；
     // 回调会在父类的updateRoute方法被调用时触发，重新为app._route赋值
+    // 由于app._route被定义为响应式，所以app._route发生变化，依赖app._route的组件(route-view组件)都会被重新渲染
     history.listen(route => {
       this.apps.forEach((app) => {
         app._route = route

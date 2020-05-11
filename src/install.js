@@ -35,7 +35,7 @@ export function install (Vue) {
         // beforeCreate hook被触发时，调用
         this._router.init(this) // 初始化VueRouter实例，并传入Vue根实例
 
-        // 响应式定义_route属性，保证_route发生变化时，组件会重新渲染
+        // 响应式定义_route属性，保证_route发生变化时，组件(router-view)会重新渲染
         Vue.util.defineReactive(this, '_route', this._router.history.current)
       } else {
         // 回溯查找_routerRoot
@@ -56,6 +56,7 @@ export function install (Vue) {
   })
 
   Object.defineProperty(Vue.prototype, '$route', {
+    // 每个组件访问到的$route，其实最后访问的都是Vue根实例的_route
     get () { return this._routerRoot._route }
   })
 

@@ -19,7 +19,7 @@ export default {
     // so that components rendered by router-view can resolve named slots
     const h = parent.$createElement// 使用父节点的渲染函数
     const name = props.name// 命名视图
-    const route = parent.$route
+    const route = parent.$route // 依赖父节点的$route，而在install.js中我们知道,所有组件访问到的$route其实都是_routerRoot._route，即Vue根实例上的_route；当路由被确认后，调用updateRoute时，会更新_routerRoot._route，进而导致router-view组件重新渲染
     // 缓存
     const cache = parent._routerViewCache || (parent._routerViewCache = {})
 

@@ -221,7 +221,7 @@ export class History {
   updateRoute (route: Route) {
     const prev = this.current
     this.current = route// 更新current
-    this.cb && this.cb(route) // 调用updateRoute回调
+    this.cb && this.cb(route) // 调用updateRoute回调，回调中会重新为_routerRoot._route赋值，进而触发router-view的重新渲染
     this.router.afterHooks.forEach(hook => { // 触发afterEach狗子
       hook && hook(/* to*/route, /* from*/prev)
     })
