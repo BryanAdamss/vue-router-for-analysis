@@ -29,7 +29,9 @@ export class HTML5History extends History {
 
       // Avoiding first `popstate` event dispatched in some browsers but first
       // history route not updated since async guard at the same time.
-      // 某些浏览器，会在初始化时触发一次popstate，需要屏蔽
+      // 某些浏览器，会在打开页面时触发一次popstate
+      // 此时如果初始路由是异步路由,就会出现`popstate`先触发,初始路由后解析完成，进而导致route未更新
+      // 所以需要避免
       const location = getLocation(this.base)
       if (this.current === START && location === initLocation) {
         return
