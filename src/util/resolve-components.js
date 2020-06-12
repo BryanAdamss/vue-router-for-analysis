@@ -2,14 +2,14 @@
 
 import { _Vue } from '../install'
 import { warn, isError } from './warn'
-// 解析异步组件，返回一个带有to, from, next参数的函数
+// 解析异步组件，返回一个接收to, from, next参数的函数
 export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
   return (to, from, next) => {
     let hasAsync = false
     let pending = 0
     let error = null
 
-    flatMapComponents(matched, (def, _, match, key) => {
+    flatMapComponents(matched, (/* 路由组件定义*/def, /* router-view实例*/_, /* 路由记录*/match, /* 视图名*/key) => {
       // if it's a function and doesn't have cid attached,
       // assume it's an async component resolve function.
       // we are not using Vue's default async resolving mechanism because
@@ -22,6 +22,7 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
         pending++
         // 解析
         const resolve = once(resolvedDef => {
+          debugger
           // 加载后的组件定义是一个esm
           if (isESModule(resolvedDef)) {
             resolvedDef = resolvedDef.default
@@ -48,9 +49,10 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
             next(error)
           }
         })
-        // 异步组件，https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6
+        // 异步组件，https://cn.vuejs.org/v2/guide/components-dynamic-async.html#异步组件
         let res
         try {
+          debugger
           res = def(resolve, reject) // 返回promise
         } catch (e) {
           reject(e)
@@ -60,7 +62,7 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
             res.then(resolve, reject)
           } else {
             // new syntax in Vue 2.3
-            // 处理加载状态，返回一个包对象；https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%A4%84%E7%90%86%E5%8A%A0%E8%BD%BD%E7%8A%B6%E6%80%81
+            // 处理加载状态，返回一个包对象；https://cn.vuejs.org/v2/guide/components-dynamic-async.html#处理加载状态
             const comp = res.component // 是通过import()加载，返回的是一个promise
             if (comp && typeof comp.then === 'function') {
               comp.then(resolve, reject)
@@ -73,10 +75,10 @@ export function resolveAsyncComponents (matched: Array<RouteRecord>): Function {
     if (!hasAsync) next()
   }
 }
-// 扁平化路由记录中的命名视图
+// 扁平化路由记录中的路由组件
 export function flatMapComponents (
-  matched: Array<RouteRecord>,
-  fn: Function
+  matched: Array<RouteRecord>, // 路由记录数组
+  fn: Function // 回调函数
 ): Array<?Function> {
   return flatten(matched.map(m => {
     return Object.keys(m.components).map(key => fn(

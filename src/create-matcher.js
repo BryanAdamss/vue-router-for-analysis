@@ -78,11 +78,11 @@ export function createMatcher (
   }
   // 创建重定向Route
   function redirect (
-    record: RouteRecord,
-    location: Location
+    record: RouteRecord, // 触发重定向的路由记录(需要进行重定向的路由记录，包含redirect)
+    location: Location // 触发重定向的初始地址（多次重定向时用到）
   ): Route {
     const originalRedirect = record.redirect
-    let redirect = typeof originalRedirect === 'function' // redirect支持传入函数;https://router.vuejs.org/zh/guide/essentials/redirect-and-alias.html#%E9%87%8D%E5%AE%9A%E5%90%91
+    let redirect = typeof originalRedirect === 'function' // redirect支持传入函数;https://router.vuejs.org/zh/guide/essentials/redirect-and-alias.html#重定向
       ? originalRedirect(createRoute(record, location, null, router))
       : originalRedirect
     // redirect返回的是一个路径path，如'/bar'

@@ -106,7 +106,7 @@ export class History {
   }
   // 确认路由跳转
   confirmTransition (/* to*/route: Route, onComplete: Function, onAbort?: Function) {
-    const current = this.current
+    const current = this.current /* from */
     // 取消
     const abort = err => {
       // after merging https://github.com/vuejs/vue-router/pull/2771 we
@@ -146,9 +146,9 @@ export class History {
       // in-component leave guards
       extractLeaveGuards(deactivated), // 提取路由组件中所有beforeRouteLeave守卫
       // global before hooks
-      this.router.beforeHooks, // 全局的beforeEach钩子
+      this.router.beforeHooks, // 全局的beforeEach守卫
       // in-component update hooks
-      extractUpdateHooks(updated), // 提取路由组件中所有beforeRouteUpdate钩子
+      extractUpdateHooks(updated), // 提取路由组件中所有beforeRouteUpdate守卫
       // in-config enter guards
       activated.map(m => m.beforeEnter), // 路由独享的beforeEnter守卫
       // async components
@@ -285,7 +285,7 @@ function extractGuards (
   bind: Function, // 绑定守卫上下文函数
   reverse?: boolean // 是否需要逆序
 ): Array<?Function> {
-  const guards = flatMapComponents(records, (def, instance, match, key) => {
+  const guards = flatMapComponents(records, (/* 路由组件定义*/def, /* router-view实例*/instance, /* 路由记录*/match, /* 视图名*/key) => {
     const guard = extractGuard(def, name) // 提取出路由组件中的守卫函数
     // 为守卫绑定上下文
     if (guard) {
@@ -316,10 +316,10 @@ function extractLeaveGuards (deactivated: Array<RouteRecord>): Array<?Function> 
 function extractUpdateHooks (updated: Array<RouteRecord>): Array<?Function> {
   return extractGuards(updated, 'beforeRouteUpdate', bindGuard)
 }
-// 将守卫的上下文绑定到vue实例
+// 将守卫的上下文绑定到vue实例(路由组件)
 function bindGuard (guard: NavigationGuard, instance: ?_Vue): ?NavigationGuard {
   if (instance) {
-    return function boundRouteGuard () {
+    return function /* 已经绑定过上下文的守卫函数*/boundRouteGuard () {
       return guard.apply(instance, arguments)
     }
   }
