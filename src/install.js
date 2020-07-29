@@ -11,7 +11,7 @@ export function install (Vue) {
 
   const isDef = v => v !== undefined
 
-  // 为router-view组件关联路由组件
+  // 为路由记录、router-view关联路由组件
   const registerInstance = (vm, callVal) => {
     let i = vm.$options._parentVnode
     // 调用vm.$options._parentVnode.data.registerRouteInstance方法

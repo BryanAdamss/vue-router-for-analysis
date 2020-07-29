@@ -83,8 +83,15 @@ export default {
 
     // attach instance registration hook
     // this will be called in the instance's injected lifecycle hooks
-    // 为router-view绑定路由组件，在所有组件的beforeCreate、destoryed hook中调用，见install.js中的registerInstance方法
-    // vm一般为router-view组件,val一般为路由组件
+    // 为路由记录绑定路由组件，在所有组件的beforeCreate、destoryed hook中调用，见install.js中的registerInstance方法
+    // 此方法只在router-view上定义了
+    // vm，val都为路由组件实例
+    // 如下
+    // matched.instances:{
+    //   default:VueComp,
+    //   hd:VueComp2,
+    //   bd:VueComp3
+    // }
     data.registerRouteInstance = (vm, val) => {
       // val could be undefined for unregistration
       const current = matched.instances[name]

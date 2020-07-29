@@ -90,7 +90,7 @@ function addRouteRecord (
     path: normalizedPath,
     regex: compileRouteRegex(normalizedPath, pathToRegexpOptions), // 利用path-to-regexp包生成用来匹配path的增强正则对象，可以用来匹配动态路由
     components: route.components || { default: route.component }, // 保存路由组件，支持命名视图https://router.vuejs.org/zh/guide/essentials/named-views.html#%E5%91%BD%E5%90%8D%E8%A7%86%E5%9B%BE
-    instances: {}, // 保存router-view实例
+    instances: {}, // 保存每个命名router-view需要渲染的路由组件
     name,
     parent,
     matchAs,
