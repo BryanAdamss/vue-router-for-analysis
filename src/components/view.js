@@ -12,6 +12,7 @@ export default {
   },
   // _为h即createElement，但router-view没有使用自身的h，而是使用了父节点的h
   render (/* h*/_, /* context*/{ props, children, parent, data }) {
+    console.log('---parent', parent)
     // used by devtools to display a router-view badge
     data.routerView = true // 标识当前组件为router-view
 
@@ -112,7 +113,7 @@ export default {
 
     // register instance in init hook
     // in case kept-alive component be actived when routes changed
-    // keep-alive组件被激活时，需要为router-view注册路由组件
+    // keep-alive组件被激活时，需要为router-view绑定路由组件
     data.hook.init = (vnode) => {
       if (vnode.data.keepAlive &&
         vnode.componentInstance &&
