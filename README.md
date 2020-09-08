@@ -1,7 +1,7 @@
 # vue-router [![Build Status](https://img.shields.io/circleci/project/github/vuejs/vue-router/dev.svg)](https://circleci.com/gh/vuejs/vue-router)
 
-> uml源文件[https://github.com/BryanAdamss/vue-router-for-analysis/blob/dev/vue-router.EAP](https://github.com/BryanAdamss/vue-router-for-analysis/blob/dev/vue-router.EAP)
-> 使用`enterprise architect`打开即可
+- > uml源文件[https://github.com/BryanAdamss/vue-router-for-analysis/blob/dev/vue-router.EAP](https://github.com/BryanAdamss/vue-router-for-analysis/blob/dev/vue-router.EAP)
+- > 使用`enterprise architect`打开即可
 
 ---
 > This is vue-router 3.0 which works only with Vue 2.0. For the 1.x router see the [1.0 branch](https://github.com/vuejs/vue-router/tree/1.0).
